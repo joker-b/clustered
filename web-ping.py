@@ -1,22 +1,42 @@
 import http.server
 import socketserver
 import socket
+import netifaces
+import os
 from datetime import datetime
+
+def get_ip_address(interface_name):
+    try:
+        return netifaces.ifaddresses(interface_name)[netifaces.AF_INET][0]['addr']
+    except (ValueError, KeyError, IndexError):
+        return None
+
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-type", "text/plain")
+        self.send_header("Content-type", "text/html")
         self.end_headers()
         
         # Get the IP address
-        ip_address = socket.gethostbyname(socket.gethostname())
+        ip_address = get_ip_address('wlan0')
+        if not ip_address:
+            ip_address = socket.gethostbyname(socket.gethostname())
         
         # Get current system time
         current_time = datetime.now().strftime('%H:%M:%S')
+        try:
+            hn = os.uname()[1]
+        except:
+            hn = "some windows box"
         
         # Construct the message
-        message = f"This is IP {ip_address}, the current system time is {current_time}"
+        message = f"<h2>This is {hn}, IP {ip_address}</h2>"
+        message += f"<p>The current system time is {current_time}</p>"
+        message += "<h2>Request:</h2>"
+        message += "<p><tt>"
+        message += self.requestline
+        message += "</tt></p>"
         
         self.wfile.write(message.encode('utf-8'))
 
