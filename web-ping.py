@@ -22,7 +22,9 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         
         # Get the IP address
-        ip_address = get_ip_address('wlan0')
+        ip_address = get_ip_address('enX0')   # ec2
+        if not ip_address:
+          ip_address = get_ip_address('wlan0') # home network etc
         if not ip_address:
             ip_address = socket.gethostbyname(socket.gethostname())
         
