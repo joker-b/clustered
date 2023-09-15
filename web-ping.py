@@ -15,7 +15,10 @@ def get_ip_address(interface_name):
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
+        if self.html_format:
+            self.send_header("Content-type", "text/html")
+        else:
+            self.send_header("Content-type", "text/plain")
         self.end_headers()
         
         # Get the IP address
@@ -31,12 +34,15 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             hn = "some windows box"
         
         # Construct the message
-        message = f"<h2>This is {hn}, IP {ip_address}</h2>"
-        message += f"<p>The current system time is {current_time}</p>"
-        message += "<h2>Request:</h2>"
-        message += "<p><tt>"
-        message += self.requestline
-        message += "</tt></p>"
+        if self.html_format:
+            message = f"<h2>This is {hn}, IP {ip_address}</h2>"
+            message += f"<p>The current system time is {current_time}</p>"
+            message += "<h2>Request:</h2>"
+            message += "<p><tt>"
+            message += self.requestline
+            message += "</tt></p>"
+        else:
+            message = f"{hn}, IP {ip_address} at {current_time} for {self.requestline}"
         
         self.wfile.write(message.encode('utf-8'))
 
@@ -44,6 +50,7 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     do_POST = do_GET
     do_PUT = do_GET
     do_DELETE = do_GET
+    html_format = False
 
 if __name__ == "__main__":
     PORT = 8000
