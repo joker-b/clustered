@@ -1,0 +1,38 @@
+{
+  "MaxCount": 1,
+  "MinCount": 1,
+  "ImageId": "ami-01103fb68b3569475",
+  "InstanceType": "t2.small",
+  "KeyName": "botz-hpc-east-2-27may2023",
+  "EbsOptimized": false,
+  "UserData": "#!/bin/bash\nyum update -y\nyum install -y httpd\nsystemctl start httpd.service\nsystemctl enable httpd.service\necho \"This is host $(hostname -f)\" > /var/www/html/index.html\n",
+  "NetworkInterfaces": [
+    {
+      "AssociatePublicIpAddress": true,
+      "DeviceIndex": 0,
+      "Groups": [
+        "sg-0ebade7e0bd834f20"
+      ]
+    }
+  ],
+  "TagSpecifications": [
+    {
+      "ResourceType": "instance",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "This is a Dummy Name"
+        },
+        {
+          "Key": "IAPM",
+          "Value": "39474"
+        }
+      ]
+    }
+  ],
+  "PrivateDnsNameOptions": {
+    "HostnameType": "ip-name",
+    "EnableResourceNameDnsARecord": true,
+    "EnableResourceNameDnsAAAARecord": false
+  }
+}
